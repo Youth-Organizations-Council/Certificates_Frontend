@@ -1,0 +1,150 @@
+---
+// Component Imports
+import Layout from "../../layouts/main.astro";
+// Full Astro Component Syntax:
+// https://docs.astro.build/core-concepts/astro-components/
+
+const { id } = Astro.params;
+
+const response = await fetch(`http://127.0.0.1:8000/certificate/${id}`);
+const data = await response.json();
+let err = null;
+if (response.status !== 200) {
+  err = data;
+}
+
+
+---
+
+<Layout>
+  {
+    err ? (
+      <section class="text-gray-400 bg-gray-900 body-font">
+        <div class="container mx-auto flex flex-col px-5 py-24 justify-center items-center">
+          <img
+            class="lg:w-2/6 md:w-3/6 w-11/12 mb-10 object-cover object-center rounded"
+            alt="hero"
+            src="https://api.memegen.link/images/custom/Oops/Couldn't_Verify_The_Certificate.jpg?alt=https://i.imgur.com/CsCgN7Ll.png&width=400"
+          />
+          <div class="w-full md:w-2/3 flex flex-col mb-16 items-center text-center">
+            <h1 class="title-font sm:text-4xl text-3xl mb-4 font-medium text-white">
+              Oops!
+            </h1>
+            <p class="mb-8 leading-relaxed">{err.error}</p>
+          </div>
+        </div>
+      </section>
+    ) : (
+      <section class="text-gray-400 bg-gray-900 body-font">
+        <div class="container px-5 py-24 mx-auto flex flex-wrap">
+          <div class="flex flex-wrap w-full">
+            <div class="lg:w-2/5 md:w-1/2 md:pr-10 md:py-6">
+              <div class="flex relative pb-12">
+                <div class="h-full w-10 absolute inset-0 flex items-center justify-center">
+                  <div class="h-full w-1 bg-gray-800 pointer-events-none" />
+                </div>
+                <div class="flex-shrink-0 w-10 h-10 rounded-full bg-green-500 inline-flex items-center justify-center text-white relative z-10">
+                  <svg
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    class="w-5 h-5"
+                    viewBox="0 0 24 24"
+                  >
+                    <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+                  </svg>
+                </div>
+                <div class="flex-grow pl-4">
+                  <h2 class="font-medium title-font text-sm text-white mb-1 tracking-wider">
+                    Secure
+                  </h2>
+                  <p class="leading-relaxed">
+                    This certificate was issued securely by the Youth
+                    Organization Council's Certificate tool.
+                  </p>
+                </div>
+              </div>
+              <div class="flex relative pb-12">
+                <div class="h-full w-10 absolute inset-0 flex items-center justify-center">
+                  <div class="h-full w-1 bg-gray-800 pointer-events-none" />
+                </div>
+                <div class="flex-shrink-0 w-10 h-10 rounded-full bg-green-500 inline-flex items-center justify-center text-white relative z-10">
+                  <svg
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    class="w-5 h-5"
+                    viewBox="0 0 24 24"
+                  >
+                    <path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2" />
+                    <circle cx="12" cy="7" r="4" />
+                  </svg>
+                </div>
+                <div class="flex-grow pl-4">
+                  <h2 class="font-medium title-font text-sm text-white mb-1 tracking-wider">
+                    Issued to {data.name}
+                  </h2>
+                  <p class="leading-relaxed">
+                    This certificate was issued to <b>{data.name}</b> by{" "}
+                    <b>{data.organization}</b>.
+                  </p>
+                </div>
+              </div>
+              <div class="flex relative">
+                <div class="flex-shrink-0 w-10 h-10 rounded-full bg-green-500 inline-flex items-center justify-center text-white relative z-10">
+                  <svg
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    class="w-5 h-5"
+                    viewBox="0 0 24 24"
+                  >
+                    <path d="M22 11.08V12a10 10 0 11-5.93-9.14" />
+                    <path d="M22 4L12 14.01l-3-3" />
+                  </svg>
+                </div>
+                <div class="flex-grow pl-4">
+                  <h2 class="font-medium title-font text-sm text-white mb-1 tracking-wider">
+                    Authentic
+                  </h2>
+                  <p class="leading-relaxed">
+                    This page proves that the certificate was issued by the
+                    council or one of its member organizations.
+                  </p>
+                </div>
+              </div>
+              <div class="flex-grow pl-4">
+                <br />
+                <div class="flex justify-center">
+                  <a
+                    href={data.file}
+                    class="inline-flex text-white text-center bg-green-500 border-0 py-2 px-6 focus:outline-none hover:bg-green-600 rounded text-lg"
+                  >
+                    Download Certificate (PNG)
+                  </a>
+                  <a
+                    href={`http://127.0.0.1:8000/cert_pdf/${id}`}
+                    class="ml-4 inline-flex text-center text-gray-400 bg-gray-800 border-0 py-2 px-6 focus:outline-none hover:bg-gray-700 hover:text-white rounded text-lg"
+                  >
+                    Download Certificate (PDF)
+                  </a>
+                </div>
+              </div>
+            </div>
+            <img
+              class="lg:w-3/5 md:w-1/2 object-cover object-center rounded-lg md:mt-0 mt-12"
+              src={data.file}
+              alt="step"
+            />
+          </div>
+        </div>
+      </section>
+    )
+  }
+</Layout>

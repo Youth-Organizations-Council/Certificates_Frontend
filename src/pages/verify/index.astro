@@ -1,0 +1,68 @@
+---
+// Component Imports
+import Layout from "../../layouts/main.astro";
+// Full Astro Component Syntax:
+// https://docs.astro.build/core-concepts/astro-components/
+---
+
+<script>
+  import swal from "sweetalert";
+  async function verifyCertificate() {
+    const certificateCode = document.getElementById("name").value;
+    let regex = /^[a-z,0-9,-]{36,36}$/;
+    if (!regex.test(certificateCode)) {
+      swal({
+        title: "Invalid Certificate Code",
+        text: "Please enter a valid certificate code",
+        icon: "error",
+      });
+      return;
+    }
+    
+    window.location.href = `/verify/${certificateCode.toLowerCase()}`;
+  }
+
+  const verifyBtn = document.getElementById("verifyBtn");
+  verifyBtn.addEventListener("click", verifyCertificate);
+</script>
+
+<Layout>
+  <section class="text-gray-400 bg-gray-900 body-font relative">
+    <div class="container px-5 py-24 mx-auto">
+      <div class="flex flex-col text-center w-full mb-12">
+        <h1 class="sm:text-3xl text-2xl font-medium title-font mb-4 text-white">
+          Verify a Certificate
+        </h1>
+        <p class="lg:w-2/3 mx-auto leading-relaxed text-base">
+          Enter the unique code on your certificate to verify it.
+        </p>
+      </div>
+      <div class="lg:w-1/2 md:w-2/3 mx-auto">
+        <div class="flex flex-wrap -m-2">
+          <div class="p-2 w-full">
+            <div class="relative">
+              <label for="name" class="leading-7 text-sm text-gray-400"
+                >Certificate Unique Code</label
+              >
+              <input
+                type="text"
+                id="name"
+                name="name"
+                class="w-full bg-gray-800 bg-opacity-40 rounded border border-gray-700 focus:border-yellow-500 focus:bg-gray-900 focus:ring-2 focus:ring-yellow-900 text-base outline-none text-gray-100 py-1 px-3 leading-8 transition-colors duration-200 ease-in-out"
+              />
+            </div>
+          </div>
+
+          <div class="p-2 w-full">
+            <button
+              id="verifyBtn"
+              class="flex mx-auto text-white bg-yellow-500 border-0 py-2 px-8 focus:outline-none hover:bg-yellow-600 rounded text-lg"
+              >Verify</button
+            >
+          </div>
+          <div class="p-2 w-full pt-8 mt-8 text-center"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+</Layout>
