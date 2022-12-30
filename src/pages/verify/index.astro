@@ -9,6 +9,14 @@ import Layout from "../../layouts/main.astro";
   import swal from "sweetalert";
   async function verifyCertificate() {
     const certificateCode = document.getElementById("name").value;
+    if (certificateCode.length === 0) {
+      swal({
+        title: "No code entered!",
+        text: "Please enter a valid certificate code",
+        icon: "warning",
+      });
+      return;
+    }
     let regex = /^[a-z,0-9,-]{36,36}$/;
     if (!regex.test(certificateCode)) {
       swal({

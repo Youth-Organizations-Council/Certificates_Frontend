@@ -1,8 +1,5 @@
 ---
-// Component Imports
 import Layout from "../../layouts/main.astro";
-// Full Astro Component Syntax:
-// https://docs.astro.build/core-concepts/astro-components/
 
 const { id } = Astro.params;
 
@@ -11,6 +8,14 @@ const data = await response.json();
 let err = null;
 if (response.status !== 200) {
   err = data;
+}
+
+if (data.is_revoked) {
+    err = {
+        error: `This certificate has been revoked due to:
+         ${data.revokation_reason ? data.revokation_reason : "No reason provided."}
+          Please contact the issuing organization for more information.`,
+    };
 }
 
 

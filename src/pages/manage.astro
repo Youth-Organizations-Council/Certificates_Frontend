@@ -1,0 +1,109 @@
+---
+import Layout from "../layouts/main.astro";
+---
+
+<script>
+  async function getCerts() {
+    const response = await fetch(
+      "http://localhost:8000/fetch_org_certificates/",
+      {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Token ${localStorage.getItem("token")}`,
+        },
+      }
+    );
+    const successCerts = document.getElementById("success-certs");
+    if (!response.ok) {
+      successCerts.innerHTML = `<section class="text-gray-400 bg-gray-900 body-font">
+        <div class="container mx-auto flex flex-col px-5 py-24 justify-center items-center">
+          <img
+            class="lg:w-2/6 md:w-3/6 w-11/12 mb-10 object-cover object-center rounded"
+            alt="hero"
+            src="https://api.memegen.link/images/custom/Oops!/Some_Error_Prolly_Occurred.jpg?alt=https://i.imgur.com/CsCgN7Ll.png&width=400"
+          />
+          <div class="w-full md:w-2/3 flex flex-col mb-16 items-center text-center">
+            <h1 class="title-font sm:text-4xl text-3xl mb-4 font-medium text-white">
+              Oops!
+            </h1>
+            <p class="mb-8 leading-relaxed">Either you are not a representative or some error occurred. Or did you just forget to login?</p>
+          </div>
+        </div>
+      </section>`;
+      return;
+    }
+    const data = await response.json();
+    const tableBody = document.getElementById("tableBody");
+    data.map((d) => {
+      let dateObj = new Date(d.generation_time);
+      const offset = dateObj.getTimezoneOffset();
+      let date = new Date(dateObj.getTime() - offset * 60 * 1000);
+      let dateStr = date.toISOString().split("T")[0];
+
+      tableBody.innerHTML += `<tr class="bg-white border-b dark:bg-gray-900 dark:border-gray-700">
+              <th
+                scope="row"
+                class="py-4 px-6 font-medium text-gray-900 whitespace-nowrap dark:text-white"
+              >
+                ${d.name}
+              </th>
+              <td class="py-4 px-6"> ${dateStr}</td>
+              <td class="py-4 px-6"> ${d.course}</td>
+              <td class="py-4 px-6"> ${
+                d.is_revoked
+                  ? '<p class="text-red-400">Revoked</p>'
+                  : '<p class="text-green-400">Active</p>'
+              }</td>
+              <td class="py-4 px-6">
+                ${
+                  d.is_revoked
+                    ? `<a
+                  href="/revoke/${d.id}"
+                  class="revokationReasonBtn font-medium text-blue-600 dark:text-blue-500 hover:underline"
+                  >Why?</a
+                >`
+                    : `<a
+                    href="/revoke/${d.id}"
+                  class="revokeBtn font-medium text-red-600 dark:text-red-500 hover:underline"
+                  >Revoke?</a>`
+                }
+              </td>
+            </tr>`;
+    });
+  }
+
+
+  document.addEventListener("DOMContentLoaded", () => {
+    getCerts();
+    
+  });
+</script>
+
+<Layout>
+  <section id="success-certs" class="text-gray-400 bg-gray-900 body-font">
+    <div class="container mx-auto px-20">
+      <h1 class="text-4xl">Manage</h1>
+      <br />
+      <br />
+      <div class="overflow-x-auto relative shadow-md sm:rounded-lg">
+        <table
+          class="w-full text-sm text-left text-gray-500 dark:text-gray-400"
+        >
+          <thead
+            class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400"
+          >
+            <tr>
+              <th scope="col" class="py-3 px-6"> Issued to</th>
+              <th scope="col" class="py-3 px-6"> Issued On</th>
+              <th scope="col" class="py-3 px-6"> Issued for</th>
+              <th scope="col" class="py-3 px-6"> Status</th>
+              <th scope="col" class="py-3 px-6"> Action</th>
+            </tr>
+          </thead>
+          <tbody id="tableBody"> </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+</Layout>

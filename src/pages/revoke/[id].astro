@@ -1,0 +1,138 @@
+---
+import Layout from "../../layouts/main.astro";
+
+const { id } = Astro.params;
+
+const response = await fetch(`http://127.0.0.1:8000/certificate/${id}`);
+const certData = await response.json();
+let err = null;
+if (response.status !== 200) {
+  err = certData;
+}
+---
+
+<script>
+  import swal from "sweetalert";
+  const idField = document.getElementById("idField");
+  const id = idField.innerText;
+  idField.remove();
+
+  const revokeButton = document.querySelector("button");
+  revokeButton.addEventListener("click", async () => {
+    const revokeConsent = await swal({
+      title: "Are you sure?",
+      text: "Once revoked, you will not be able to recover this certificate!",
+      icon: "warning",
+      buttons: true,
+      dangerMode: true,
+    });
+
+    if (!revokeConsent) {
+      return;
+    }
+    let revReason = document.getElementById("rev_reason").value;
+    if (revReason === "") {
+      revReason = null;
+    }
+    const response = await fetch(`http://localhost:8000/revoke/${id}`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: "Token " + localStorage.getItem("token"),
+      },
+      body: JSON.stringify({
+        revokation_reason: revReason,
+      }),
+    });
+
+    if (response.status === 200) {
+      swal("Revoked!", "Certificate has been revoked!", "success");
+      setTimeout(() => {
+        window.location.reload();
+      }, 2000);
+    } else {
+      swal("Error!", "Something went wrong!", "error");
+    }
+  });
+</script>
+
+<Layout>
+  <p id="idField" style="display: none;">{id}</p>
+  <section class="text-gray-400 bg-gray-900 body-font">
+    <div class="container px-5 py-24 mx-auto flex flex-col">
+      <div class="lg:w-4/6 mx-auto">
+        <div
+          class={certData.is_revoked
+            ? "rounded-lg h-1/6 overflow-hidden blur-sm grayscale-0"
+            : "rounded-lg h-1/6 overflow-hidden"}
+        >
+          <img
+            alt="content"
+            class="object-cover object-center h-full w-full"
+            src={certData.file}
+          />
+        </div>
+
+        <div
+          class="sm:w-2/3 sm:pl-8 sm:py-8 border-gray-800 sm:border-t-0 border-t mt-4 pt-4 sm:mt-0 text-center sm:text-left"
+        >
+          {
+            certData.is_revoked ? (
+              <h1 class="text-red-500 text-6xl">Revoked!</h1>
+            ) : (
+              <h1 class="text-green-500 text-6xl">Not Revoked!</h1>
+            )
+          }
+          <p class="leading-relaxed text-lg mb-4">
+            Name: {certData.name}
+            <br />
+            Course: {certData.course}
+            <br />
+            Date: {certData.generation_time}
+            <br />
+          </p>
+          {
+            certData.is_revoked ? (
+              <p class="leading-relaxed text-lg mb-4">
+                Revokation Reason:{" "}
+                {certData.revokation_reason
+                  ? certData.revokation_reason
+                  : "No reason given."}
+              </p>
+            ) : (
+              <>
+                <div class="relative mb-4">
+                  <label for="rev_reason" class="leading-7 text-sm text-gray-400">
+                    Revocation Reason
+                  </label>
+                  <textarea
+                    id="rev_reason"
+                    name="rev_reason"
+                    class="w-full bg-gray-800 rounded border border-gray-700 focus:border-purple-500 focus:ring-2 focus:ring-purple-900 h-32 text-base outline-none text-gray-100 py-1 px-3 resize-none leading-6 transition-colors duration-200 ease-in-out"
+                  />
+                </div>
+                <button
+                  id="revokeBtn"
+                  class="text-red-400 inline-flex items-center"
+                >
+                  Revoke
+                  <svg
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    class="w-4 h-4 ml-2"
+                    viewBox="0 0 24 24"
+                  >
+                    <path d="M5 12h14M12 5l7 7-7 7" />
+                  </svg>
+                </button>
+              </>
+            )
+          }
+        </div>
+      </div>
+    </div>
+  </section>
+</Layout>
