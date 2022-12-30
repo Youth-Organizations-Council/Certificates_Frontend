@@ -5,7 +5,7 @@ import Layout from "../layouts/main.astro";
 <script>
   async function getCerts() {
     const response = await fetch(
-      "http://localhost:8000/fetch_org_certificates/",
+      "https://certs.yocouncil.org/fetch_org_certificates/",
       {
         method: "GET",
         headers: {

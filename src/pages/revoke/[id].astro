@@ -3,7 +3,7 @@ import Layout from "../../layouts/main.astro";
 
 const { id } = Astro.params;
 
-const response = await fetch(`http://127.0.0.1:8000/certificate/${id}`);
+const response = await fetch(`https://certs.yocouncil.org/certificate/${id}`);
 const certData = await response.json();
 let err = null;
 if (response.status !== 200) {
@@ -34,7 +34,7 @@ if (response.status !== 200) {
     if (revReason === "") {
       revReason = null;
     }
-    const response = await fetch(`http://localhost:8000/revoke/${id}`, {
+    const response = await fetch(`https://certs.yocouncil.org/revoke/${id}`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

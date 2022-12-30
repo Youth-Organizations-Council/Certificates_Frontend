@@ -9,7 +9,7 @@ import Layout from "../layouts/main.astro";
     e.preventDefault();
     const formData = new FormData(issueForm);
     const data = Object.fromEntries(formData);
-    const response = await fetch("http://127.0.0.1:8000/certificate", {
+    const response = await fetch("https://certs.yocouncil.org/certificate", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

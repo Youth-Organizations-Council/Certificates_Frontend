@@ -9,7 +9,7 @@ import Layout from "../layouts/main.astro";
   async function login() {
     let data = new FormData(loginForm);
 
-    let response = await fetch("http://localhost:8000/api-token-auth/", {
+    let response = await fetch("https://certs.yocouncil.org/api-token-auth/", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
