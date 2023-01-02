@@ -1,5 +1,5 @@
 {
-  "name": "yoc-certificates-backend",
+  "name": "yoc-certificates-frontend",
   "type": "module",
   "version": "0.0.1",
   "private": true,
