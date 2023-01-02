@@ -46,7 +46,7 @@ import Layout from "../layouts/main.astro";
                 scope="row"
                 class="py-4 px-6 font-medium text-gray-900 whitespace-nowrap dark:text-white"
               >
-                ${d.name}
+                <a style="color: #91D8E4;" href=/verify/${d.id}>${d.name}</a>
               </th>
               <td class="py-4 px-6"> ${dateStr}</td>
               <td class="py-4 px-6"> ${d.course}</td>
